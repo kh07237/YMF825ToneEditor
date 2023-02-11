@@ -1,3 +1,4 @@
+#未使用
 import platform
 from tkinter import *
 from tkinter import ttk
