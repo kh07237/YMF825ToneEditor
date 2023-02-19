@@ -8,6 +8,9 @@ from tkinter import ttk
 from tone_dic import tone,get_system_exclusive,load,save,get_tone_name_list
 from client import *
 
+app_title = 'YMF825 Tone Editor'
+initial_tone_name = 'GrandPiano'
+
 #voice_commonのspinboxパラメータ情報
 spinbox_info={
     'bo' : {'name':'基本オクターブ','from':0,'to':3},
@@ -49,7 +52,7 @@ def test_tone_th_th():
     with tlock:    
         cli.send('c008') 
         cli.send('903e7f') #Note ON
-        time.sleep(2)
+    time.sleep(2)
     with tlock:    
         cli.send('803e7f') #Note OFF
 
@@ -88,8 +91,13 @@ def OnEnter(p):
     print(f'OnEnter({p})')
     spin_update(0)
     spin_update_op(0)
+#スペースキーが押されたらテスト音再生
+def OnSpace(p):
+    #print(f'OnSpace')
+    test_tone_th()
 
 #View変数(val)とModel変数(tone)を比較し、差があったら更新する
+#引数p　意味なし
 def spin_update(p):
     updated = False
     for p in spinbox_info:
@@ -100,8 +108,9 @@ def spin_update(p):
                    set_alg_image(tone['alg'][0])
             tone[p][0] = b
             updated = True
-    if updated:
+    if updated: 
         send_tone()
+#引数p　意味なし
 def spin_update_op(p):
     updated = False
     for op in range(4):
@@ -169,9 +178,12 @@ def update_ui():
     for p in spinbox_info: #voice_commonのspinbox
         b = tone[p][0]
         val[p].set(b)
-    for p in spinbox_info_op:
-        val_op[p][op].set(tone[p][op])
-    set_alg_image(tone['alg'])
+    for op in range(4):
+        for p in spinbox_info_op:
+            val_op[p][op].set(tone[p][op])
+    set_alg_image(tone['alg'][0])
+    root.title(tonename)
+    
 #アルゴリズム説明図
 algimage = None
 alg_images = []
@@ -201,10 +213,11 @@ def set_alg_image(n):
 ####################################################################################
 ##ここからスタート
 
-load('PickBass')
+load(initial_tone_name)
 
 #ウィンドウ
 root = Tk()
+root.title(initial_tone_name)
 root.minsize(width=250, height=150)
 frame = ttk.Frame(root, padding=1)
 frame2 = ttk.Frame(
@@ -221,16 +234,20 @@ listbox = None
 menu_bar = Menu(root)
 root.config(menu=menu_bar)
 menu_file = Menu(menu_bar,tearoff=0)
-menu_file_loadex = Menu(menu_file,tearoff=0)
-for l in get_tone_name_list():
-    menu_file_loadex.add_command(label = l,command=OnLoad)
-menu_file.add_cascade(label='ロード',menu=menu_file_loadex)
-menu_file.add_command(label='ロード',command = OnLoad)
+#menu_file_loadex = Menu(menu_file,tearoff=0)
+#for l in get_tone_name_list():
+#    menu_file_loadex.add_command(label = l,command=OnLoad)
+#menu_file.add_cascade(label='ロード',menu=menu_file_loadex)
+menu_file.add_command(label='開く...',command = OnLoad)
 menu_file.add_command(label='名前を付けて保存...',command=OnSave_as)
 menu_bar.add_cascade(label='ファイル',menu=menu_file)
+menu_help = Menu(menu_bar,tearoff=0)
+menu_help.add_command(label='バージョン情報')
+menu_bar.add_cascade(label='ヘルプ',menu=menu_help)
 
 #キーバインド
 root.bind('<Return>',OnEnter)
+root.bind('<space>',OnSpace)
 
 
 """# コントロール配置行（row）の割り当て 
