@@ -2,20 +2,12 @@ OBJS= fmasgn.o fmif.o fmnote.o\
 	fmpart.o fmtone.o fmvoice.o fmsd1_raspi.o\
 	
 
-fm825test: $(OBJS) fm825test.o
-	gcc -o fm825test fm825test.o $(OBJS) -l bcm2835
-
-settone: $(OBJS) settone.o
-	gcc -o settone settone.o $(OBJS) -l bcm2835
-
-sendmidi: $(OBJS) sendmidi.o
-	gcc -o sendmidi sendmidi.o $(OBJS) -l bcm2835
-
 server: $(OBJS) server.o
 	gcc -o server server.o $(OBJS) -l bcm2835
 
-init: $(OBJS) init.o
-	gcc -o init init.o $(OBJS) -l bcm2835
+ymf825srv: $(OBJS) server.o
+	gcc -o ymf825srv server.o $(OBJS) -l bcm2835
+
 
 
 fmasgn.o:   fmasgn.c fmasgn.h fmtype.h
