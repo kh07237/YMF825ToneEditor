@@ -21,6 +21,10 @@
 
 ## C言語側ビルド方法
 ```
-$ make server
+$ make ymf825srv
+```
+## C言語側サーバープログラムの起動
+```
+$ sudo ./ymf825srv
 ```
 
